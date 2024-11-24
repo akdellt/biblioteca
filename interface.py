@@ -1,4 +1,5 @@
-from database import registrar, login, nome_user, add_exemplar, del_exemplar, edit_exemplar, todos_exemplares, filtrar_status, pesquisar
+from database import buscar_email, nova_senha_aleatoria, nova_senha_criada, registrar, login, nome_user, add_exemplar, del_exemplar, edit_exemplar, todos_exemplares, filtrar_status, pesquisar
+from envios import enviar_email_senha, enviar_email_emprestimo
 from tkinter import *
 
 
@@ -12,8 +13,90 @@ for widget in janela.winfo_children():
     widget.grid_forget()
 
 
+def tela_recuperacao():
+    for widget in janela.winfo_children():
+        widget.grid_forget()
+
+    titulo = Label(janela, text="Digite seu email para recuperação de senha:")
+    titulo.grid(column=0, row=0, pady=10)
+
+    label_email = Label(janela, text="Email:")
+    label_email.grid(column=0, row=1, sticky="w", padx=10)
+    entry_email = Entry(janela)
+    entry_email.grid(column=1, row=1, padx=10)
+
+    mensagem = Label(janela, text="")
+    mensagem.grid(column=0, row=2, columnspan=2)
+
+    def enviar_senha():
+        email = entry_email.get()
+        if buscar_email(email): 
+            senha_aleatoria = enviar_email_senha(email)
+            nova_senha_aleatoria(email, senha_aleatoria)
+            mensagem.config(text="Senha enviada para o e-mail. Insira a senha gerada e a nova senha.", fg="green")
+            tela_nova_senha()
+        else:
+            mensagem.config(text="E-mail não cadastrado.", fg="red")
+
+    botao_enviar = Button(janela, text="Enviar senha", command=enviar_senha)
+    botao_enviar.grid(column=0, row=3, columnspan=2, pady=10)
+
+
+def tela_nova_senha():
+    for widget in janela.winfo_children():
+        widget.grid_forget()
+
+    titulo = Label(janela, text="Atualize sua senha:")
+    titulo.grid(column=0, row=0, columnspan=2, pady=10)
+
+    label_email = Label(janela, text="Email:")
+    label_email.grid(column=0, row=1, sticky="w", padx=10)
+    entry_email = Entry(janela)
+    entry_email.grid(column=1, row=1, padx=10)
+
+    label_senha_gerada = Label(janela, text="Senha gerada:")
+    label_senha_gerada.grid(column=0, row=2, sticky="w", padx=10)
+    entry_senha_gerada = Entry(janela, show="*")
+    entry_senha_gerada.grid(column=1, row=2, padx=10)
+
+    label_nova_senha = Label(janela, text="Nova senha:")
+    label_nova_senha.grid(column=0, row=3, sticky="w", padx=10)
+    entry_nova_senha = Entry(janela, show="*")
+    entry_nova_senha.grid(column=1, row=3, padx=10)
+
+    mensagem = Label(janela, text="")
+    mensagem.grid(column=0, row=4, columnspan=2)
+
+    def atualizar_senha():
+        email = entry_email.get()
+        senha_gerada = entry_senha_gerada.get()
+        nova_senha = entry_nova_senha.get()
+
+        if len(nova_senha) < 6:
+            mensagem.config(text="A nova senha deve ter pelo menos 6 caracteres.", fg="red")
+            return
+
+        resultado = nova_senha_criada(email, senha_gerada, nova_senha)
+        if resultado == True:
+            mensagem.config(text="Senha atualizada com sucesso! Faça login novamente.", fg="green")
+            tela_login()
+        elif resultado == "Senha gerada incorreta":
+            mensagem.config(text="Senha gerada incorreta. Tente novamente.", fg="red")
+        elif resultado == "Usuário não encontrado":
+            mensagem.config(text="Usuário não encontrado. Verifique o e-mail.", fg="red")
+        else:
+            mensagem.config(text="Erro ao atualizar a senha.", fg="red")
+
+    botao_atualizar = Button(janela, text="Atualizar senha", command=atualizar_senha)
+    botao_atualizar.grid(column=0, row=5, columnspan=2, pady=10)
+
+
+
 # TELA DE INICIAL DE REGISTRO
 def tela_registro():
+    for widget in janela.winfo_children():
+        widget.grid_forget()
+
     titulo = Label(janela, text="Organize a sua biblioteca pessoal agora!")
     titulo.grid(column=0, row=0, pady=10)
 
@@ -35,13 +118,19 @@ def tela_registro():
     mensagem = Label(janela, text="")
     mensagem.grid(column=0, row=4, columnspan=2)
 
+    #FUNÇÃO DE REGISTRAR
     def registro():
         nome =  entry_nome.get()
         email = entry_email.get()
         senha = entry_senha.get()
 
-        if registrar(nome, email, senha):
+        resultado = registrar(nome, email, senha)
+        if resultado == True:
             mensagem.config(text="Usuário registrado, seja bem vindo!", fg="green")
+        elif resultado == "Formato inválido":
+            mensagem.config(text="Erro ao registrar, e-mail inválido.", fg="red")
+        elif len(senha) < 6:
+            mensagem.config(text="A senha deve conter no mínimo 6 caracteres.", fg="red")
         else:
             mensagem.config(text="Erro ao registrar, e-mail já existe.", fg="red")
 
@@ -77,14 +166,23 @@ def tela_login():
         email = entry_email.get()
         senha = entry_senha.get()
 
-        if login(email, senha):
+        resultado = login(email, senha)
+        if resultado == True:
             mensagem.config(text="Login realizado com sucesso!", fg="green")
             tela_acervo()
+        elif resultado == "Formato inválido":
+            mensagem.config(text="E-mail inválido.", fg="red")
         else:
             mensagem.config(text="E-mail ou senha incorretos.", fg="red")
 
     botao_login = Button(janela, text="Login", command=entrar)
     botao_login.grid(column=0, row=4, columnspan=2, pady=10)
+
+    botao_registrar = Button(janela, text="Registrar", command=tela_registro)
+    botao_registrar.grid(column=0, row=5, columnspan=2, pady=10)
+
+    botao_senha = Button(janela, text="Recuperar senha", command=tela_recuperacao)
+    botao_senha.grid(column=1, row=5, columnspan=2, pady=10)
 
 
 
@@ -151,14 +249,17 @@ def tela_acervo():
     bloco_botoes = Frame(janela, bg="grey", width=150, padx=5, pady=5)
     bloco_botoes.grid(column=0, row=1, padx=10, pady=10)
 
-    botao_adicionar = Button(bloco_botoes, text="Adicionar", width=33, command=tela_adicionar)
+    botao_adicionar = Button(bloco_botoes, text="Adicionar", width=25, command=tela_adicionar)
     botao_adicionar.grid(column=1, row=0)
 
-    botao_editar = Button(bloco_botoes, text="Editar", width=33, command=tela_editar)
+    botao_editar = Button(bloco_botoes, text="Editar", width=25, command=tela_editar)
     botao_editar.grid(column=2, row=0)
 
-    botao_excluir = Button(bloco_botoes, text="Excluir", width=33, command=tela_excluir)
+    botao_excluir = Button(bloco_botoes, text="Excluir", width=25, command=tela_excluir)
     botao_excluir.grid(column=3, row=0)
+
+    botao_excluir = Button(bloco_botoes, text="Devolução", width=25, command=tela_devolucao)
+    botao_excluir.grid(column=4, row=0)
 
 
     #BLOCO DE FILTROS E BUSCA
@@ -174,8 +275,8 @@ def tela_acervo():
     filtro_emprestados = Button(bloco_filtros, text="Emprestados", width=20, command=lambda: filtrar_exemplares(1))
     filtro_emprestados.grid(column=2, row=0)
 
-    entry_pesquisa = Entry(bloco_filtros, width=30)
-    entry_pesquisa.grid(column=3, row=0, padx=5)
+    entry_pesquisa = Entry(bloco_filtros, width=31)
+    entry_pesquisa.grid(column=3, row=0, padx=10)
     botao_pesquisa = Button(bloco_filtros, width=10, text="Buscar", command=pesquisar_exemplar)
     botao_pesquisa.grid(column=4, row=0)
 
@@ -393,6 +494,52 @@ def tela_editar():
 
     botao_voltar = Button(janela_edit, text="Voltar", command=janela_edit.destroy)
     botao_voltar.grid(column=0, row=11, columnspan=2, pady=5)
+
+
+#FUNÇÃO DE ENVIAR EMAIL DE DEVOLUÇÃO
+def tela_devolucao():
+    janela_devol = Toplevel(janela)
+    janela_devol.title("Devolução")
+
+    titulo = Label(janela_devol, text="Envio de lembrete de devolução de livro")
+    titulo.grid(row=0, column=0, columnspan=2, pady=10)
+
+    label_nome = Label(janela_devol, text="Nome do destinatário:")
+    label_nome.grid(row=1, column=0, sticky="w", padx=10)
+    entry_nome = Entry(janela_devol)
+    entry_nome.grid(row=1, column=1, padx=10)
+
+    label_email = Label(janela_devol, text="E-mail do destinatário:")
+    label_email.grid(row=2, column=0, sticky="w", padx=10)
+    entry_email = Entry(janela_devol)
+    entry_email.grid(row=2, column=1, padx=10)
+
+    label_livro = Label(janela_devol, text="Nome do livro:")
+    label_livro.grid(row=3, column=0, sticky="w", padx=10)
+    entry_livro = Entry(janela_devol)
+    entry_livro.grid(row=3, column=1, padx=10)
+
+    def enviar_email_devolucao():
+        nome_destinatario = entry_nome.get()
+        destinatario = entry_email.get()
+        nome_livro = entry_livro.get()
+        nome_usuario = nome_user()
+        
+        livro = pesquisar(nome_livro)
+
+        if destinatario and nome_destinatario and livro and nome_usuario:
+            enviar_email_emprestimo(destinatario, nome_usuario, nome_livro, nome_destinatario)
+            janela_devol.destroy()
+        elif livro is None:
+            mensagem.config(text="Você não possui esse livro no acervo.", fg="red")
+        else:
+            mensagem.config(text="Por favor, preencha todos os campos.", fg="red")
+
+    botao_enviar = Button(janela_devol, text="Enviar Lembrete", command=enviar_email_devolucao)
+    botao_enviar.grid(row=4, column=0, columnspan=2, pady=20)
+
+    mensagem = Label(janela_devol, text="")
+    mensagem.grid(row=5, column=0, columnspan=2)
 
 
 # MOSTRA TELA INICIAL DE REGISTRO
