@@ -199,7 +199,7 @@ def tela_acervo():
 
         exemplares = todos_exemplares()
         for i, exemplar in enumerate(exemplares):
-            label_exemplar = Label(bloco_exemplares, text=f"ID: {exemplar[0]} -- Título: {exemplar[1]} -- Categoria: {exemplar[2]} -- Autor: {exemplar[3]}", width=102)
+            label_exemplar = Label(bloco_exemplares, text=f"ID: {exemplar[0]} -- Título: {exemplar[1]} -- Categoria: {exemplar[2]} -- Autor: {exemplar[3]}", width=104)
             label_exemplar.grid(column=0, row=i, padx=2, pady=2)
 
 
@@ -216,7 +216,7 @@ def tela_acervo():
 
         if exemplares:
             for i, exemplar in enumerate(exemplares):
-                label_exemplar = Label(bloco_exemplares, text=f"ID: {exemplar[0]} -- Título: {exemplar[1]} -- Categoria: {exemplar[2]} -- Autor: {exemplar[3]}", width=102)
+                label_exemplar = Label(bloco_exemplares, text=f"ID: {exemplar[0]} -- Título: {exemplar[1]} -- Categoria: {exemplar[2]} -- Autor: {exemplar[3]}", width=104)
                 label_exemplar.grid(row=i, column=0, padx=2, pady=2)
         else:
             print("")
@@ -231,7 +231,7 @@ def tela_acervo():
 
         if exemplares:
             for i, exemplar in enumerate(exemplares):
-                label_exemplar = Label(bloco_exemplares, text=f"ID: {exemplar[0]} -- Título: {exemplar[1]} -- Categoria: {exemplar[2]} -- Autor: {exemplar[3]}", width=102)
+                label_exemplar = Label(bloco_exemplares, text=f"ID: {exemplar[0]} -- Título: {exemplar[1]} -- Categoria: {exemplar[2]} -- Autor: {exemplar[3]}", width=104)
                 label_exemplar.grid(row=i, column=0, padx=2, pady=2)
         else:
             print("Filtro", "Nenhum exemplar encontrado.")
@@ -284,44 +284,48 @@ def tela_acervo():
     bloco_exemplares = Frame(janela, bg="grey", width=150, padx=5, pady=5)
     bloco_exemplares.grid(column=0, row=3, padx=10, pady=10)
 
+    atualizar()
+
 
 #CONFIGURAÇÕES TELA DE ADICIONAR EXEMPLAR
 def tela_adicionar():
-    janela_add = Toplevel(janela)
-    janela_add.title("Adicionar Exemplar")
+    for widget in janela.winfo_children():
+        widget.grid_forget()
 
-    label_titulo = Label(janela_add, text="Título:")
+    janela.title("Adicionar Exemplar")
+
+    label_titulo = Label(janela, text="Título:")
     label_titulo.grid(column=0, row=1, sticky="w")
-    entry_titulo = Entry(janela_add)
+    entry_titulo = Entry(janela)
     entry_titulo.grid(column=1, row=1, sticky="w")
 
-    label_categoria = Label(janela_add, text="Categoria:")
+    label_categoria = Label(janela, text="Categoria:")
     label_categoria.grid(column=0, row=2, sticky="w")
     var_categoria = StringVar()
     var_categoria.set("")
     categorias = ["Livro", "Artigo", "Revista"]
-    opcoes_categorias = OptionMenu(janela_add, var_categoria, *categorias)
+    opcoes_categorias = OptionMenu(janela, var_categoria, *categorias)
     opcoes_categorias.grid(column=1, row=2, sticky="w")
 
-    label_autor = Label(janela_add, text="Autor:")
+    label_autor = Label(janela, text="Autor:")
     label_autor.grid(column=0, row=3, sticky="w")
-    entry_autor = Entry(janela_add)
+    entry_autor = Entry(janela)
     entry_autor.grid(column=1, row=3, sticky="w")
 
-    label_ano = Label(janela_add, text="Ano:")
+    label_ano = Label(janela, text="Ano:")
     label_ano.grid(column=0, row=4, sticky="w")
-    entry_ano = Entry(janela_add)
+    entry_ano = Entry(janela)
     entry_ano.grid(column=1, row=4, sticky="w")
 
-    label_paginas = Label(janela_add, text="Páginas:")
+    label_paginas = Label(janela, text="Páginas:")
     label_paginas.grid(column=0, row=5, sticky="w")
-    entry_paginas = Entry(janela_add)
+    entry_paginas = Entry(janela)
     entry_paginas.grid(column=1, row=5, sticky="w")
 
     emprestado_var = IntVar()
-    Checkbutton(janela_add, text="Emprestado", variable=emprestado_var).grid(column=1, row=6, pady=5)
+    Checkbutton(janela, text="Emprestado", variable=emprestado_var).grid(column=1, row=6, pady=5)
 
-    mensagem = Label(janela_add, text="")
+    mensagem = Label(janela, text="")
     mensagem.grid(column=0, row=7, columnspan=2)
 
 
@@ -345,24 +349,26 @@ def tela_adicionar():
         else:
             mensagem.config(text="Exemplar já existe.", fg="red")
 
-    botao_add = Button(janela_add, text="Adicionar Exemplar", command=adicionar)
+    botao_add = Button(janela, text="Adicionar Exemplar", command=adicionar)
     botao_add.grid(column=0, row=8, pady=10)
 
-    botao_voltar = Button(janela_add, text="Voltar", command=janela_add.destroy)
+    botao_voltar = Button(janela, text="Voltar", command=tela_acervo)
     botao_voltar.grid(column=1, row=8, pady=10)
 
 
 #CONFIGURAÇÕES DE TELA DE EXCLUSÃO DE EXEMPLAR
 def tela_excluir():
-    janela_exc = Toplevel(janela)
-    janela_exc.title("Excluir exemplar")
+    for widget in janela.winfo_children():
+        widget.grid_forget()
 
-    label_id = Label(janela_exc, text="ID:")
+    janela.title("Excluir exemplar")
+
+    label_id = Label(janela, text="ID:")
     label_id.grid(column=0, row=2, sticky="w")
-    entry_id = Entry(janela_exc)
+    entry_id = Entry(janela)
     entry_id.grid(column=1, row=2, sticky="w")
 
-    mensagem = Label(janela_exc, text="")
+    mensagem = Label(janela, text="")
     mensagem.grid(column=0, row=3, columnspan=2)
 
     #FUNÇÃO DE EXCLUIR EXEMPLAR
@@ -376,68 +382,74 @@ def tela_excluir():
         except ValueError:
             mensagem.config(text="Id inválido.", fg="red")
 
-    botao_add = Button(janela_exc, text="Excluir Exemplar", command=excluir)
+    botao_add = Button(janela, text="Excluir Exemplar", command=excluir)
     botao_add.grid(column=0, row=7, pady=10)
 
-    botao_voltar = Button(janela_exc, text="Voltar", command=janela_exc.destroy)
+    botao_voltar = Button(janela, text="Voltar", command=tela_acervo)
     botao_voltar.grid(column=1, row=7, pady=10)
 
 
 #CONFIGURAÇÃO DE TELA DE EDIÇÃO DO EXEMPLAR
 def tela_editar():
-    janela_edit = Toplevel(janela)
-    janela_edit.title("Editar exemplar")
+    for widget in janela.winfo_children():
+        widget.grid_forget()
 
-    label_busca = Label(janela_edit, text="Título ou ID:")
+    janela.title("Editar exemplar")
+
+    label_busca = Label(janela, text="Título ou ID:")
     label_busca.grid(column=0, row=0, sticky="w")
-    entry_busca = Entry(janela_edit)
+    entry_busca = Entry(janela)
     entry_busca.grid(column=1, row=0, sticky="w")
 
-    mensagem_busca = Label(janela_edit, text="")
+    mensagem_busca = Label(janela, text="")
     mensagem_busca.grid(column=0, row=1, columnspan=2)
 
-    label_id = Label(janela_edit, text="ID:")
+    label_id = Label(janela, text="ID:")
     label_id.grid(column=0, row=2, sticky="w")
-    entry_id = Entry(janela_edit, state="readonly")
+    entry_id = Entry(janela, state="readonly")
     entry_id.grid(column=1, row=2, sticky="w")
 
-    label_titulo = Label(janela_edit, text="Título:")
+    label_titulo = Label(janela, text="Título:")
     label_titulo.grid(column=0, row=3, sticky="w")
-    entry_titulo = Entry(janela_edit)
+    entry_titulo = Entry(janela)
     entry_titulo.grid(column=1, row=3, sticky="w")
 
-    label_categoria = Label(janela_edit, text="Categoria:")
+    label_categoria = Label(janela, text="Categoria:")
     label_categoria.grid(column=0, row=4, sticky="w")
     var_categoria = StringVar()
     var_categoria.set("")
     categorias = ["Livro", "Artigo", "Revista"]
-    opcoes_categorias = OptionMenu(janela_edit, var_categoria, *categorias)
+    opcoes_categorias = OptionMenu(janela, var_categoria, *categorias)
     opcoes_categorias.grid(column=1, row=4, sticky="w")
 
-    label_autor = Label(janela_edit, text="Autor:")
+    label_autor = Label(janela, text="Autor:")
     label_autor.grid(column=0, row=5, sticky="w")
-    entry_autor = Entry(janela_edit)
+    entry_autor = Entry(janela)
     entry_autor.grid(column=1, row=5, sticky="w")
 
-    label_ano = Label(janela_edit, text="Ano:")
+    label_ano = Label(janela, text="Ano:")
     label_ano.grid(column=0, row=6, sticky="w")
-    entry_ano = Entry(janela_edit)
+    entry_ano = Entry(janela)
     entry_ano.grid(column=1, row=6, sticky="w")
 
-    label_paginas = Label(janela_edit, text="Páginas:")
+    label_paginas = Label(janela, text="Páginas:")
     label_paginas.grid(column=0, row=7, sticky="w")
-    entry_paginas = Entry(janela_edit)
+    entry_paginas = Entry(janela)
     entry_paginas.grid(column=1, row=7, sticky="w")
 
     emprestado_var = IntVar()
-    Checkbutton(janela_edit, text="Emprestado", variable=emprestado_var).grid(column=1, row=8, pady=5)
+    Checkbutton(janela, text="Emprestado", variable=emprestado_var).grid(column=1, row=8, pady=5)
 
-    mensagem_edicao = Label(janela_edit, text="")
+    mensagem_edicao = Label(janela, text="")
     mensagem_edicao.grid(column=0, row=9, columnspan=2)
 
+    def limpar_mensagens():
+        mensagem_busca.config(text="")
+        mensagem_edicao.config(text="")
 
     #FUNÇÃO DE BUSCAR EXEMPLAR
     def buscar_exemplar():
+        limpar_mensagens()
         busca = entry_busca.get()
         exemplares = pesquisar(busca)
 
@@ -467,9 +479,19 @@ def tela_editar():
             mensagem_busca.config(text="Exemplar encontrado!", fg="green")
         else:
             mensagem_busca.config(text="Exemplar não encontrado.", fg="red")
+            entry_id.config(state="normal")
+            entry_id.delete(0, END)
+            entry_id.config(state="readonly")
+            entry_titulo.delete(0, END)
+            var_categoria.set("")
+            entry_autor.delete(0, END)
+            entry_ano.delete(0, END)
+            entry_paginas.delete(0, END)
+            emprestado_var.set(bool(0))
 
     #FUNÇÃO DE ATUALIZAR INFORMAÇÕES
     def salvar_edicao():
+        limpar_mensagens()
         try:
             id_exemplar = int(entry_id.get())
             titulo = entry_titulo.get()
@@ -486,37 +508,39 @@ def tela_editar():
         except ValueError:
             mensagem_edicao.config(text="ID inválido.", fg="red")
 
-    botao_buscar = Button(janela_edit, text="Buscar", command=buscar_exemplar)
+    botao_buscar = Button(janela, text="Buscar", command=buscar_exemplar)
     botao_buscar.grid(column=2, row=0, padx=10)
 
-    botao_salvar = Button(janela_edit, text="Salvar Alterações", command=salvar_edicao)
+    botao_salvar = Button(janela, text="Salvar Alterações", command=salvar_edicao)
     botao_salvar.grid(column=0, row=10, columnspan=2, pady=10)
 
-    botao_voltar = Button(janela_edit, text="Voltar", command=janela_edit.destroy)
+    botao_voltar = Button(janela, text="Voltar", command=[limpar_mensagens, tela_acervo])
     botao_voltar.grid(column=0, row=11, columnspan=2, pady=5)
 
 
 #FUNÇÃO DE ENVIAR EMAIL DE DEVOLUÇÃO
 def tela_devolucao():
-    janela_devol = Toplevel(janela)
-    janela_devol.title("Devolução")
+    for widget in janela.winfo_children():
+        widget.grid_forget()
 
-    titulo = Label(janela_devol, text="Envio de lembrete de devolução de livro")
+    janela.title("Devolução")
+
+    titulo = Label(janela, text="Envio de lembrete de devolução de livro")
     titulo.grid(row=0, column=0, columnspan=2, pady=10)
 
-    label_nome = Label(janela_devol, text="Nome do destinatário:")
+    label_nome = Label(janela, text="Nome do destinatário:")
     label_nome.grid(row=1, column=0, sticky="w", padx=10)
-    entry_nome = Entry(janela_devol)
+    entry_nome = Entry(janela)
     entry_nome.grid(row=1, column=1, padx=10)
 
-    label_email = Label(janela_devol, text="E-mail do destinatário:")
+    label_email = Label(janela, text="E-mail do destinatário:")
     label_email.grid(row=2, column=0, sticky="w", padx=10)
-    entry_email = Entry(janela_devol)
+    entry_email = Entry(janela)
     entry_email.grid(row=2, column=1, padx=10)
 
-    label_livro = Label(janela_devol, text="Nome do livro:")
+    label_livro = Label(janela, text="Nome do livro:")
     label_livro.grid(row=3, column=0, sticky="w", padx=10)
-    entry_livro = Entry(janela_devol)
+    entry_livro = Entry(janela)
     entry_livro.grid(row=3, column=1, padx=10)
 
     def enviar_email_devolucao():
@@ -529,16 +553,16 @@ def tela_devolucao():
 
         if destinatario and nome_destinatario and livro and nome_usuario:
             enviar_email_emprestimo(destinatario, nome_usuario, nome_livro, nome_destinatario)
-            janela_devol.destroy()
+            tela_acervo()
         elif livro is None:
             mensagem.config(text="Você não possui esse livro no acervo.", fg="red")
         else:
             mensagem.config(text="Por favor, preencha todos os campos.", fg="red")
 
-    botao_enviar = Button(janela_devol, text="Enviar Lembrete", command=enviar_email_devolucao)
+    botao_enviar = Button(janela, text="Enviar Lembrete", command=enviar_email_devolucao)
     botao_enviar.grid(row=4, column=0, columnspan=2, pady=20)
 
-    mensagem = Label(janela_devol, text="")
+    mensagem = Label(janela, text="")
     mensagem.grid(row=5, column=0, columnspan=2)
 
 
