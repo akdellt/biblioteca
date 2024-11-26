@@ -514,7 +514,7 @@ def tela_editar():
     botao_salvar = Button(janela, text="Salvar Alterações", command=salvar_edicao)
     botao_salvar.grid(column=0, row=10, columnspan=2, pady=10)
 
-    botao_voltar = Button(janela, text="Voltar", command=[limpar_mensagens, tela_acervo])
+    botao_voltar = Button(janela, text="Voltar", command=tela_acervo)
     botao_voltar.grid(column=0, row=11, columnspan=2, pady=5)
 
 
